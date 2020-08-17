@@ -9,6 +9,12 @@ planning on using this to play around with other build systems (yuck)
 runs on osx and linux [+ requires ncurses](https://www.cyberciti.biz/faq/linux-install-ncurses-library-headers-on-debian-ubuntu-centos-fedora/)
 
 
+to build and run
+```
+make
+./a.out
+```
+
 rust clone coming soon...
 
 ![gameplay](./game.png)
