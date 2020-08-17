@@ -6,3 +6,5 @@ very rough, uses make to build
 planning on using this to play around with other build systems (yuck)
 
 rust clone coming soon...
+
+![gameplay](./game.png)
