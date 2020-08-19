@@ -11,8 +11,11 @@ runs on osx and linux [+ requires ncurses](https://www.cyberciti.biz/faq/linux-i
 
 to build and run
 ```
+cd nvaders
+mkdir build && cd build
+cmake ..
 make
-./a.out
+./nvaders
 ```
 
 rust clone coming soon...
