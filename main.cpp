@@ -9,6 +9,6 @@ Name: Kaleb Alanis
 int main (int argc, char const *argv[])
 {
     GameRunner runner;
-    runner.run();
+    runner.start();
     return 0;
 }
