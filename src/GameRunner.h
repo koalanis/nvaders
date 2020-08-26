@@ -14,13 +14,15 @@
 #include "EnemyMissle.h"
 #include "EnemyCruiser.h"
 #include "EnemyDestroyer.h"
-
+#include "MenuLevel.h"
+#include "GameLevel.h"
 #include <list>
 #include <string>
 
 using std::list;
 using std::string;
 
+struct Level;
 
 struct GameRunner
 {
@@ -36,18 +38,26 @@ int maxHeight;
 int ticksPassed;
 int score;
 bool done;
+Scenes scenes;
 bool quit;
 bool win;
 bool lose;
+std::list<Level*> levels;
+std::list<Level*>::iterator currentLevel;
+std::list<Level*>::iterator lastLevel;
+
 
 	GameRunner();
 	~GameRunner();
 
-	void init();
-	void run();
-	void draw();
-	void update(int);
-	void cleanup();
+	// void init();
+	void start();
+	// bool shouldLoopRun();
+	// void draw();
+	// void update(int);
+	void kill();
+	// void loop();
+	// void cleanup();
 
 };
 
