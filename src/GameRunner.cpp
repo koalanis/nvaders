@@ -5,19 +5,6 @@
 void cleanup(GameRunner* gr)
 {
 
-  // all objects that are create and destroyed will be pointers in these lists
-  // I use other lists for a more efficient update algortitm but all allocated
-  // addresses are restored
-
-  for(std::list<GameObject*>::iterator i = gr->gameObjects.begin(); i != gr->gameObjects.end(); ++i)
-  {
-      delete *i;
-  }
-
-  for(std::list<GameObject*>::iterator i = gr->deadObjects.begin(); i != gr->deadObjects.end(); ++i){
-    delete *i;
-  }
-
   for(std::list<Level*>::iterator i = gr->levels.begin(); i != gr->levels.end(); ++i){
     delete *i;
   }
@@ -28,11 +15,6 @@ void createLevels(GameRunner* gr)
     gr->levels.push_back(new MenuLevel(gr));
     gr->levels.push_back(new GameLevel(gr));
     
-}
-
-bool shouldLoopRun(GameRunner* gr)
-{
-  return !gr->quit && !gr->win && !gr->lose;
 }
 
 GameRunner::GameRunner()
@@ -62,19 +44,16 @@ void GameRunner::start()
   }
 
   start_color();			/* Start color 			*/
-  init_pair(1, COLOR_RED, COLOR_BLACK);
-
+  init_pair(1, COLOR_WHITE, COLOR_BLACK);
   attron(COLOR_PAIR(1));
+
+  
 
   this->maxWidth =  30;
   this->maxHeight = 29;
-
   this->ticksPassed = 0;
-  this->score  = 0;
   this->quit = false;
-  this->lose = false;
-  this->win = false;
-
+  
   createLevels(this);
 
   this->currentLevel = this->levels.begin();
@@ -94,9 +73,6 @@ void GameRunner::start()
   timeout(delay);
 
   int ch = 0;
-  this->quit = false;
-
-  
 
   int elapsedTime;
 
@@ -121,9 +97,19 @@ void GameRunner::start()
       Level* level = *(this->currentLevel);
       if(level->isLevelComplete())
       {
+        level->cleanup();
+        nsleep(100);
         this->currentLevel++;
-        Level* nextLevel = *(this->currentLevel);
-        nextLevel->init();
+        if(this->currentLevel == this->lastLevel) 
+        {
+          this->currentLevel = this->levels.begin();
+          (*(this->currentLevel))->init();
+        } 
+        else 
+        {
+          Level* nextLevel = *(this->currentLevel);
+          nextLevel->init();
+        }
       }
       else {
         level->update(ch);
@@ -135,9 +121,8 @@ void GameRunner::start()
     move(0,0); /// move cursor to 0,0 (looks prettier if os doesn't allow invisible cursors)
   }
 
-  cleanup(this);
   endwin();
-
+  cleanup(this);
 }
 
 void GameRunner::kill()

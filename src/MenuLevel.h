@@ -20,6 +20,7 @@ struct MenuLevel : public Level
   virtual void update(int);
   virtual void draw();
   virtual void init();
+  virtual void cleanup();
 
 };
 

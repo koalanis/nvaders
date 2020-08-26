@@ -16,6 +16,9 @@ set( GAME_SOURCES
   src/GameObject.cpp      
   src/Ship.cpp
   src/GameRunner.cpp
+  src/MenuLevel.cpp
+  src/Level.cpp
+  src/GameLevel.cpp
 )
 
 set( LIBS

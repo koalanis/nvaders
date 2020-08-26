@@ -37,5 +37,10 @@ bool MenuLevel::isLevelComplete()
 
 void MenuLevel::init()
 {
-  
+  this->start = false;
+}
+
+void MenuLevel::cleanup()
+{
+  this->start = false;
 }
