@@ -6,6 +6,7 @@ PlayerMissle::PlayerMissle(int x, int y) : Projectile(x,y,'|')
 {
   this->velocity = -1;
   PlayerMissle::instances+=1;
+  this->_color = 6;
 }
 
 PlayerMissle::~PlayerMissle()

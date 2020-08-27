@@ -26,6 +26,12 @@ GameRunner::~GameRunner()
  
 }
 
+
+void GameRunner::setColor(int c)
+{
+  attron(COLOR_PAIR(c));
+}
+
 void GameRunner::start()
 {
 
@@ -44,10 +50,28 @@ void GameRunner::start()
   }
 
   start_color();			/* Start color 			*/
+
   init_pair(1, COLOR_WHITE, COLOR_BLACK);
   attron(COLOR_PAIR(1));
-
   
+  init_pair(2, COLOR_CYAN, COLOR_BLACK);
+  // attron(COLOR_PAIR(2));
+
+  init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
+  // attron(COLOR_PAIR(3));
+
+  init_pair(4, COLOR_BLUE, COLOR_BLACK);
+  // attron(COLOR_PAIR(4));
+
+  init_pair(5, COLOR_YELLOW, COLOR_BLACK);
+  // attron(COLOR_PAIR(5));
+
+  init_pair(6, COLOR_GREEN, COLOR_BLACK);
+  // attron(COLOR_PAIR(6));
+
+  init_pair(6, COLOR_RED, COLOR_BLACK);
+  // attron(COLOR_PAIR(6));
+
 
   this->maxWidth =  30;
   this->maxHeight = 29;

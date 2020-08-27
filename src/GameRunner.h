@@ -32,7 +32,8 @@ struct GameRunner
 
 	// void init();
 	void start();
-	
+
+	void setColor(int);
 	// bool shouldLoopRun();
 	// void draw();
 	// void update(int);
