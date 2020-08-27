@@ -59,7 +59,7 @@ struct Scenes
 		menu += "#                           #\n";
 		menu += "#           to              #\n";
 		menu += "#                           #\n";
-		menu += "#       Space Raiders       #\n";
+		menu += "#         Nvaders           #\n";
 		menu += "#                           #\n";
 		menu += "#                           #\n";
 		menu += "#                           #\n";

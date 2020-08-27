@@ -22,14 +22,17 @@ GameLevel::~GameLevel()
 
 void GameLevel::draw() 
 {
+  this->gameRunner->setColor(1);
   mvprintw(1,0,  this->gameRunner->scenes.border.c_str());
   mvprintw(0, 0, "Points: %i.   'q' to quit.\n", this->score);
   if(!this->lose)
   {
+    this->gameRunner->setColor(this->player->getColor());
     mvaddch(1+this->player->getYPos(), this->player->getXPos(), this->player->getASCII());
   }
   for (std::list<GameObject*>::iterator i = this->gameObjects.begin(); i != this->gameObjects.end(); ++i)
   {
+    this->gameRunner->setColor((*i)->getColor());
     mvaddch(1+(*i)->getYPos(), (*i)->getXPos(), (*i)->getASCII());
   }
 

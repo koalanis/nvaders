@@ -5,6 +5,7 @@ class GameObject
 {
 
 public:
+	GameObject(int x, int y, char spr, int color);
 	GameObject(int x, int y, char spr);
 
 	virtual ~GameObject();
@@ -12,6 +13,8 @@ public:
 	virtual void update(int cmd) = 0;
 
 	char getASCII();
+
+	int getColor();
 
 	void setXPos(const int x);
 
@@ -26,6 +29,7 @@ public:
 	int _y;
 	char _sprite;
 	bool isAlive;
+	int _color;
 };
 
 
