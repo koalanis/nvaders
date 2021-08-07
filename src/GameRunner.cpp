@@ -29,11 +29,10 @@ void cleanup(GameRunner *gr) {
 void createLevels(GameRunner *gr) {
   gr->levels.push_back(new MenuLevel(gr));
   gr->levels.push_back(new GameLevel(gr));
-  // gr->levels.push_back(new GameLevel(gr,2));
-  // gr->levels.push_back(new GameLevel(gr,3));
-  // gr->levels.push_back(new GameLevel(gr,4));
-  // gr->levels.push_back(new GameLevel(gr,5));
-
+  gr->levels.push_back(new GameLevel(gr,2));
+  gr->levels.push_back(new GameLevel(gr,3));
+  gr->levels.push_back(new GameLevel(gr,4));
+  gr->levels.push_back(new GameLevel(gr,5));
   gr->endgame.push_back(new GameWonLevel(gr));
   gr->endgame.push_back(new GameLostLevel(gr));
 }

@@ -20,4 +20,8 @@ make
 
 rust clone coming soon...
 
-![gameplay](./game.png)
+-
+
+Screenshots taken in cool-retro-term
+![menu](./nvaders-menu.png)
+![gameplay](./nvaders-gameplay.png)
