@@ -13,7 +13,7 @@ public:
 
 	virtual bool isLevelComplete() = 0;
 	virtual void update(int) = 0;
-  virtual void draw() = 0;
+  	virtual void draw() = 0;
 	virtual void init() = 0;
 	virtual void cleanup() = 0;
 

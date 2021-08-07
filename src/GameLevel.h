@@ -3,6 +3,7 @@
 
 #include<string>
 #include <list>
+#include <memory>
 
 #include "Level.h"
 
@@ -16,7 +17,6 @@ class Projectile;
 
 struct GameLevel : public Level
 {
-  std::string mask;
 
   bool start;
   bool quit;
@@ -24,12 +24,10 @@ struct GameLevel : public Level
   bool lose;
   bool done;
   int score;
-  PlayerShip* player;
-  std::list<GameObject*> gameObjects;
-  std::list<EnemyShip*> hoardObjects;
-  std::list<Projectile*> bullets;
-  std::list<GameObject*> deadObjects;
-
+  std::shared_ptr<PlayerShip> player;
+  std::list< std::shared_ptr<GameObject> > gameObjects;
+  std::list< std::shared_ptr<EnemyShip>> hoardObjects;
+  std::list< std::shared_ptr<Projectile> > bullets;
 
   GameLevel(GameRunner*);
   virtual ~GameLevel();
