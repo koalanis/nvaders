@@ -1,6 +1,6 @@
-#include "MenuLevel.h"
-#include "GameRunner.h"
-#include "Level.h"
+#include "MenuLevel.hpp"
+#include "GameRunner.hpp"
+#include "Level.hpp"
 
 MenuLevel::MenuLevel(GameRunner *gr) : Level(gr) {
   this->start = false;

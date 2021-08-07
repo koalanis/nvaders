@@ -2,7 +2,7 @@
 Name: Kaleb Alanis
 */
 
-#include "src/GameRunner.h"
+#include "src/GameRunner.hpp"
 #include <iostream>
 
 int main(int argc, char const *argv[]) {

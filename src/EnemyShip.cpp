@@ -1,5 +1,5 @@
-#include "EnemyShip.h"
-#include "EnemyMissle.h"
+#include "EnemyShip.hpp"
+#include "EnemyMissle.hpp"
 #include <stdlib.h> /* srand, rand */
 
 int EnemyShip::velocity = 1;

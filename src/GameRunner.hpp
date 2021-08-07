@@ -1,0 +1,44 @@
+#ifndef _GameRunner_h
+#define _GameRunner_h
+#include "../timehelper.h"
+#include "Scenes.hpp"
+#include <list>
+#include <ncurses.h> /* the ncurses library */
+#include <stdlib.h>  /* srand, rand */
+#include <string>
+#include <time.h>   /* time */
+#include <unistd.h> /* sleep */
+
+struct Level;
+
+struct GameRunner {
+
+  int delay;
+  int maxWidth;
+  int maxHeight;
+  int ticksPassed;
+  Scenes scenes;
+  bool quit;
+  int score;
+
+  std::list<Level *> levels;
+  std::list<Level *> endgame;
+  std::list<Level *>::iterator currentLevel;
+  std::list<Level *>::iterator lastLevel;
+
+  GameRunner();
+  ~GameRunner();
+
+  // void init();
+  void start();
+
+  void setColor(int);
+  // bool shouldLoopRun();
+  // void draw();
+  // void update(int);
+  void kill();
+  // void loop();
+  // void cleanup();
+};
+
+#endif

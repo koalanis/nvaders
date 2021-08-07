@@ -1,4 +1,4 @@
-#include "EnemyMissle.h"
+#include "EnemyMissle.hpp"
 
 EnemyMissle::EnemyMissle(int x, int y, char bullet) : Projectile(x, y, bullet) {
   this->velocity = 1;
