@@ -16,9 +16,9 @@ void EnemyShip::update(int cmd) {
 
 bool EnemyShip::fire() {
   if (this->getASCII() == 'W') {
-    return rand() % 1000 <= 150;
+    return rand() % 10000 <= 150;
 
   } else {
-    return rand() % 1000 <= 75;
+    return rand() % 10000 <= 75;
   }
 }

@@ -23,7 +23,7 @@ GameLevel::~GameLevel() {
 void GameLevel::draw() {
   this->gameRunner->setColor(1);
   mvprintw(1, 0, this->gameRunner->scenes.border.c_str());
-  mvprintw(0, 0, "Points: %i.   'q' to quit.\n", this->score);
+  mvprintw(0, 0, "Points: %i.   'q' to quit.  Ticks:%i\n", this->score, this->gameRunner->ticksPassed);
   if (!this->lose) {
     this->gameRunner->setColor(this->player->getColor());
     mvaddch(1 + this->player->getYPos(), this->player->getXPos(),
@@ -64,7 +64,7 @@ void GameLevel::update(int ch) {
   playerHeight = this->player->getYPos();
 
   // update hoardObjects movement
-  if (ticksPassed % 20 == 0) {
+  if (ticksPassed % 50 == 0) {
     for (std::list<std::shared_ptr<EnemyShip>>::iterator i = this->hoardObjects.begin();
          i != this->hoardObjects.end(); ++i) {
       if ((*i)->getYPos() > enemyHeight)
@@ -200,7 +200,12 @@ void GameLevel::update(int ch) {
     this->lose = true;
     this->done = true;
   } else {
-    if (this->score == 1) {
+    // if (this->score == 1) {
+    //   this->win = true;
+    //   this->done = true;
+    // }
+
+    if(this->player->isAlive && this->hoardObjects.empty()) {
       this->win = true;
       this->done = true;
     }
@@ -216,7 +221,7 @@ void createPlayer(GameLevel *gr) {
 }
 
 void createEnemy(GameLevel *gr) {
-  for (size_t i = 0; i < 1; i++) {
+  for (size_t i = 0; i < 11; i++) {
     if (i % 2 == 0) {
       std::shared_ptr<EnemyShip> temp = std::make_shared<EnemyCruiser>(9 + i, 3);
       gr->gameObjects.push_back(temp);
@@ -228,7 +233,7 @@ void createEnemy(GameLevel *gr) {
     }
   }
 
-  for (size_t i = 0; i < 0; i++) {
+  for (size_t i = 0; i < 11; i++) {
     if (i % 2 == 0) {
       std::shared_ptr<EnemyShip> temp = std::make_shared<EnemyDestroyer>(9 + i, 2);
       gr->gameObjects.push_back(temp);
