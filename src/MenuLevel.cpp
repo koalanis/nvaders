@@ -2,6 +2,7 @@
 #include "GameRunner.hpp"
 #include "Level.hpp"
 
+
 MenuLevel::MenuLevel(GameRunner *gr) : Level(gr) {
   this->start = false;
   this->quit = false;
