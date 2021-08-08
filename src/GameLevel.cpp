@@ -1,31 +1,41 @@
-#include "GameLevel.h"
-#include "GameRunner.h"
-#include "Level.h"
-#include "PlayerShip.h"
+#include "GameLevel.hpp"
+#include "GameRunner.hpp"
+#include "Level.hpp"
+#include "PlayerShip.hpp"
 
-#include "EnemyCruiser.h"
-#include "EnemyDestroyer.h"
-#include "EnemyMissle.h"
-#include "GameObject.h"
-#include "PlayerMissle.h"
-#include "Projectile.h"
-#include "Ship.h"
+#include "EnemyCruiser.hpp"
+#include "EnemyDestroyer.hpp"
+#include "EnemyMissle.hpp"
+#include "GameObject.hpp"
+#include "PlayerMissle.hpp"
+#include "Projectile.hpp"
+#include "Ship.hpp"
+#include <algorithm>
 #include <list>
+#include <memory>
 
-GameLevel::GameLevel(GameRunner *gr) : Level(gr) {}
+void createPlayer(GameLevel *gr);
+void createEnemy(GameLevel *gr);
 
-GameLevel::~GameLevel() {}
+GameLevel::GameLevel(GameRunner *gr, int rowsOfEnemies) : Level(gr) {
+  this->rowsOfEnemies = rowsOfEnemies;
+}
+
+GameLevel::GameLevel(GameRunner *gr) : GameLevel(gr, 1) {}
+
+GameLevel::~GameLevel() { this->cleanup(); }
 
 void GameLevel::draw() {
   this->gameRunner->setColor(1);
   mvprintw(1, 0, this->gameRunner->scenes.border.c_str());
-  mvprintw(0, 0, "Points: %i.   'q' to quit.\n", this->score);
+  mvprintw(0, 0,"Points: %i.   'q' to quit.\n");
   if (!this->lose) {
     this->gameRunner->setColor(this->player->getColor());
     mvaddch(1 + this->player->getYPos(), this->player->getXPos(),
             this->player->getASCII());
   }
-  for (std::list<GameObject *>::iterator i = this->gameObjects.begin();
+  for (std::list<std::shared_ptr<GameObject>>::iterator i =
+           this->gameObjects.begin();
        i != this->gameObjects.end(); ++i) {
     this->gameRunner->setColor((*i)->getColor());
     mvaddch(1 + (*i)->getYPos(), (*i)->getXPos(), (*i)->getASCII());
@@ -33,16 +43,20 @@ void GameLevel::draw() {
 }
 
 void GameLevel::update(int ch) {
-
+  // check if user quit game
   if (ch == 'q') {
     this->gameRunner->kill();
   }
 
+  this->command = ch;
+
   int playerHeight = 0;
   int enemyHeight = 0;
   int ticksPassed = this->gameRunner->ticksPassed;
+
   // update bullets first
-  for (std::list<Projectile *>::iterator i = this->bullets.begin();
+  for (std::list<std::shared_ptr<Projectile>>::iterator i =
+           this->bullets.begin();
        i != this->bullets.end(); ++i) {
     if ((*i)->getASCII() == '|')
       (*i)->update(ch);
@@ -53,56 +67,65 @@ void GameLevel::update(int ch) {
     }
   }
 
-  // update player
-  this->player->update(ch);
+  // update player movement
+  if (this->player->canUpdate(this->gameRunner, ch)) {
+    this->player->update(ch);
+  }
   playerHeight = this->player->getYPos();
-  // update hoardObjects
 
-  if (ticksPassed % 20 == 0) {
-    for (std::list<EnemyShip *>::iterator i = this->hoardObjects.begin();
+  // update hoardObjects movement
+  if (ticksPassed % 2 == 0) {
+    for (std::list<std::shared_ptr<EnemyShip>>::iterator i =
+             this->hoardObjects.begin();
          i != this->hoardObjects.end(); ++i) {
       if ((*i)->getYPos() > enemyHeight)
         enemyHeight = (*i)->getYPos();
       if (((*i)->getXPos() == 1 && EnemyShip::velocity < 0) ||
-          ((*i)->getXPos() == 27 && EnemyShip::velocity > 0))
+          ((*i)->getXPos() == this->gameRunner->maxWidth - 1 &&
+           EnemyShip::velocity > 0))
         EnemyShip::shiftDown = true;
     }
 
     if (EnemyShip::shiftDown) {
-      for (std::list<EnemyShip *>::iterator i = this->hoardObjects.begin();
+      for (std::list<std::shared_ptr<EnemyShip>>::iterator i =
+               this->hoardObjects.begin();
            i != this->hoardObjects.end(); ++i) {
         (*i)->setYPos((*i)->getYPos() + 1);
       }
       EnemyShip::velocity *= -1;
       EnemyShip::shiftDown = false;
     } else {
-      for (std::list<EnemyShip *>::iterator i = this->hoardObjects.begin();
+      for (std::list<std::shared_ptr<EnemyShip>>::iterator i =
+               this->hoardObjects.begin();
            i != this->hoardObjects.end(); ++i) {
         (*i)->update(ch);
       }
     }
   }
 
+  // handle player bullet ship bullet spawning
   if (this->player->fire() && ch == ' ') {
-    PlayerMissle *temp =
-        new PlayerMissle(this->player->getXPos(), this->player->getYPos() - 1);
+    std::shared_ptr<Projectile> temp = std::make_shared<PlayerMissle>(
+        this->player->getXPos(), this->player->getYPos() - 1);
     temp->isAlive = true;
     this->bullets.push_back(temp);
     this->gameObjects.push_back(temp);
   }
 
-  for (std::list<EnemyShip *>::iterator i = this->hoardObjects.begin();
+  // handle enemy bullet spawning
+  for (std::list<std::shared_ptr<EnemyShip>>::iterator i =
+           this->hoardObjects.begin();
        i != this->hoardObjects.end(); ++i) {
     if ((*i)->fire()) {
       if ((*i)->getASCII() == 'W') {
-        EnemyMissle *temp =
-            new EnemyMissle((*i)->getXPos(), (*i)->getYPos() + 1, '!');
+        std::shared_ptr<Projectile> temp = std::make_shared<EnemyMissle>(
+            (*i)->getXPos(), (*i)->getYPos() + 1, '!');
         temp->isAlive = true;
         this->bullets.push_back(temp);
         this->gameObjects.push_back(temp);
       } else {
-        EnemyMissle *temp =
-            new EnemyMissle((*i)->getXPos(), (*i)->getYPos() + 1, '*');
+        std::shared_ptr<Projectile> temp = std::make_shared<EnemyMissle>(
+            (*i)->getXPos(), (*i)->getYPos() + 1, '*');
         temp->isAlive = true;
         this->bullets.push_back(temp);
         this->gameObjects.push_back(temp);
@@ -110,25 +133,34 @@ void GameLevel::update(int ch) {
     }
   }
 
-  for (std::list<Projectile *>::iterator i = this->bullets.begin();
+  // handle bullet logic
+  for (std::list<std::shared_ptr<Projectile>>::iterator i =
+           this->bullets.begin();
        i != this->bullets.end(); ++i) {
-    for (std::list<EnemyShip *>::iterator j = this->hoardObjects.begin();
+    for (std::list<std::shared_ptr<EnemyShip>>::iterator j =
+             this->hoardObjects.begin();
          j != this->hoardObjects.end(); ++j) {
+
+      // if playership bullet hits enemy ship
+
       if ((*i)->getASCII() == '|') {
         if ((*i)->getXPos() == (*j)->getXPos() &&
             (*i)->getYPos() == (*j)->getYPos()) {
           (*j)->isAlive = false;
           (*i)->isAlive = false;
-          this->score += 1;
-          PlayerMissle::instances--;
+          this->gameRunner->score += 1;
         }
       } else {
+        // if enemy bullet hits enemy ship
         if ((*i)->getXPos() == (*j)->getXPos() &&
             (*i)->getYPos() == (*j)->getYPos()) {
           (*i)->isAlive = false;
         }
       }
     }
+
+    // if enemy bullet hits player ship
+
     if ((*i)->getASCII() != '|') {
       if ((*i)->getXPos() == this->player->getXPos() &&
           (*i)->getYPos() == this->player->getYPos()) {
@@ -138,98 +170,67 @@ void GameLevel::update(int ch) {
       }
     }
 
+    // if bullet goes out of bounds
     if ((*i)->getYPos() < 0 ||
         (*i)->getYPos() > this->gameRunner->maxHeight - 1) {
-      if ((*i)->getASCII() == '|')
-        PlayerMissle::instances--;
       (*i)->isAlive = false;
     }
   }
 
-  std::list<EnemyShip *> enemyTemp;
-  std::list<Projectile *> bulletTemp;
-  std::list<GameObject *> temp;
+  // cull out dead objects
+  this->gameObjects.erase(
+      std::remove_if(this->gameObjects.begin(), this->gameObjects.end(),
+                     [](std::shared_ptr<GameObject> g) { return !g->isAlive; }),
+      this->gameObjects.end());
 
-  for (std::list<GameObject *>::iterator i = this->gameObjects.begin();
-       i != this->gameObjects.end(); ++i) {
-    if ((*i)->isAlive == false) {
-      this->deadObjects.push_back(*i);
-    } else {
-      temp.push_back(*i);
-    }
-  }
-  this->gameObjects = temp;
-  for (std::list<GameObject *>::iterator i = this->gameObjects.begin();
-       i != this->gameObjects.end(); ++i) {
-    if ((*i)->getASCII() == 'W' || (*i)->getASCII() == 'u') {
-      enemyTemp.push_back((EnemyShip *)*i);
-    }
-  }
-  this->hoardObjects = enemyTemp;
+  this->hoardObjects.erase(
+      std::remove_if(this->hoardObjects.begin(), this->hoardObjects.end(),
+                     [](std::shared_ptr<EnemyShip> g) { return !g->isAlive; }),
+      this->hoardObjects.end());
 
-  for (std::list<GameObject *>::iterator i = this->gameObjects.begin();
-       i != this->gameObjects.end(); ++i) {
-    if ((*i)->getASCII() == '*' || (*i)->getASCII() == '!' ||
-        (*i)->getASCII() == '|') {
-      bulletTemp.push_back((Projectile *)*i);
-    }
-  }
+  this->bullets.erase(
+      std::remove_if(this->bullets.begin(), this->bullets.end(),
+                     [](std::shared_ptr<Projectile> g) { return !g->isAlive; }),
+      this->bullets.end());
 
-  if (!this->lose) {
-    if (this->player->isAlive == false) {
-      this->lose = true;
-    }
-  }
-  this->bullets = bulletTemp;
-  this->gameObjects = temp;
+  // handle endgame logic
+  // check if game over
 
-  if (playerHeight == enemyHeight) {
-    this->lose = true;
-    this->done = true;
-  } else {
-    if (this->score == 1) {
-      this->win = true;
+  if (!this->done) {
+
+    if (this->lose) {
       this->done = true;
     }
+
+    if (!this->lose) {
+      if (this->player->isAlive == false) {
+        this->lose = true;
+        this->done = true;
+      }
+    }
+
+   if (playerHeight == enemyHeight) {
+      this->lose = true;
+      this->done = true;
+    } else {
+      // if (this->score == 1) {
+      //   this->win = true;
+      //   this->done = true;
+      // }
+
+      if (this->player->isAlive && this->hoardObjects.empty()) {
+        this->win = true;
+        this->done = true;
+      }
+    }
   }
 }
 
-bool GameLevel::isLevelComplete() { return this->win || this->lose; }
-
-void createPlayer(GameLevel *gr) {
-  gr->player = new PlayerShip(15, 27);
-  gr->gameObjects.push_back(gr->player);
-}
-
-void createEnemy(GameLevel *gr) {
-  for (size_t i = 0; i < 1; i++) {
-    if (i % 2 == 0) {
-      EnemyCruiser *temp = new EnemyCruiser(9 + i, 3);
-      gr->gameObjects.push_back(temp);
-      gr->hoardObjects.push_back(temp);
-    } else {
-      EnemyDestroyer *temp = new EnemyDestroyer(9 + i, 3);
-      gr->gameObjects.push_back(temp);
-      gr->hoardObjects.push_back(temp);
-    }
-  }
-
-  for (size_t i = 0; i < 0; i++) {
-    if (i % 2 == 0) {
-      EnemyDestroyer *temp = new EnemyDestroyer(9 + i, 2);
-      gr->gameObjects.push_back(temp);
-      gr->hoardObjects.push_back(temp);
-    } else {
-      EnemyCruiser *temp = new EnemyCruiser(9 + i, 2);
-      gr->gameObjects.push_back(temp);
-      gr->hoardObjects.push_back(temp);
-    }
-  }
+bool GameLevel::isLevelComplete() {
+  return this->done && (this->win || this->lose);
 }
 
 void GameLevel::init() {
-
-  this->score = 0;
   this->start = true;
   this->lose = false;
   this->win = false;
@@ -238,14 +239,37 @@ void GameLevel::init() {
 }
 
 void GameLevel::cleanup() {
+  this->hoardObjects.clear();
+  this->gameObjects.clear();
+  this->bullets.clear();
+}
 
-  for (std::list<GameObject *>::iterator i = this->gameObjects.begin();
-       i != this->gameObjects.end(); ++i) {
-    delete *i;
-  }
+// helpers
 
-  for (std::list<GameObject *>::iterator i = this->deadObjects.begin();
-       i != this->deadObjects.end(); ++i) {
-    delete *i;
+void createPlayer(GameLevel *gr) {
+  gr->player = std::make_shared<PlayerShip>(15, 27);
+  std::shared_ptr<GameObject> p = gr->player;
+  gr->gameObjects.push_back(p);
+}
+
+void createEnemy(GameLevel *gr) {
+
+  auto amountPerRow = 10;
+  auto enemySpawnY = 2;
+
+  for (size_t row = 0; row < gr->rowsOfEnemies; row++) {
+    for (size_t i = 0; i < amountPerRow; i++) {
+      if (i % 2 == 0) {
+        std::shared_ptr<EnemyShip> temp =
+            std::make_shared<EnemyCruiser>(9 + i, enemySpawnY + row);
+        gr->gameObjects.push_back(temp);
+        gr->hoardObjects.push_back(temp);
+      } else {
+        std::shared_ptr<EnemyShip> temp =
+            std::make_shared<EnemyDestroyer>(9 + i, enemySpawnY + row);
+        gr->gameObjects.push_back(temp);
+        gr->hoardObjects.push_back(temp);
+      }
+    }
   }
 }

@@ -1,2 +1,4 @@
-#include "EnemyCruiser.h"
-EnemyCruiser::EnemyCruiser(int x, int y) : EnemyShip(x, y, 'u', '*') {}
+#include "EnemyCruiser.hpp"
+EnemyCruiser::EnemyCruiser(int x, int y) : EnemyShip(x, y, 'u', '*') {
+  this->_color = 5;
+}

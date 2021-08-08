@@ -21,6 +21,8 @@ set( GAME_SOURCES
   src/MenuLevel.cpp
   src/Level.cpp
   src/GameLevel.cpp
+  src/GameWonLevel.cpp
+  src/GameLostLevel.cpp
 )
 
 set( LIBS

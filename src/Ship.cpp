@@ -1,4 +1,4 @@
-#include "Ship.h"
+#include "Ship.hpp"
 
 Ship::Ship(int x, int y, char spr, char ammo) : GameObject(x, y, spr) {
   this->isAlive = true;

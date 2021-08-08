@@ -1,4 +1,4 @@
-#include "GameObject.h"
+#include "GameObject.hpp"
 
 GameObject::GameObject(int x, int y, char spr, int color = 1) {
   this->_x = x;

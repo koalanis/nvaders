@@ -1,6 +1,17 @@
-#include "GameRunner.h"
-#include "GameLevel.h"
-#include "MenuLevel.h"
+#include "GameRunner.hpp"
+#include "GameLevel.hpp"
+#include "MenuLevel.hpp"
+
+#include "GameLostLevel.hpp"
+#include "GameWonLevel.hpp"
+
+int GAME_MODE = 1;
+int END_MODE = 2;
+
+void goToEndState(GameRunner *gr, bool lost, int score);
+void goToWinState(GameRunner *gr, int score);
+void goToLoseState(GameRunner *gr, int score);
+void goToPlayState(GameRunner *gr);
 
 void cleanup(GameRunner *gr) {
 
@@ -8,11 +19,22 @@ void cleanup(GameRunner *gr) {
        i != gr->levels.end(); ++i) {
     delete *i;
   }
+
+  for (std::list<Level *>::iterator i = gr->endgame.begin();
+       i != gr->endgame.end(); ++i) {
+    delete *i;
+  }
 }
 
 void createLevels(GameRunner *gr) {
   gr->levels.push_back(new MenuLevel(gr));
   gr->levels.push_back(new GameLevel(gr));
+  gr->levels.push_back(new GameLevel(gr,2));
+  gr->levels.push_back(new GameLevel(gr,3));
+  gr->levels.push_back(new GameLevel(gr,4));
+  gr->levels.push_back(new GameLevel(gr,5));
+  gr->endgame.push_back(new GameWonLevel(gr));
+  gr->endgame.push_back(new GameLostLevel(gr));
 }
 
 GameRunner::GameRunner() {}
@@ -23,6 +45,7 @@ void GameRunner::setColor(int c) { attron(COLOR_PAIR(c)); }
 
 void GameRunner::start() {
 
+  this->score = 0;
   srand(time(NULL));       /// seed to some random number based on time
   if (initscr() == NULL) { /// init the screen, defaults to stdscr
     endwin();
@@ -53,14 +76,14 @@ void GameRunner::start() {
   init_pair(5, COLOR_YELLOW, COLOR_BLACK);
   // attron(COLOR_PAIR(5));
 
-  init_pair(6, COLOR_GREEN, COLOR_BLACK);
-  // attron(COLOR_PAIR(6));
-
   init_pair(6, COLOR_RED, COLOR_BLACK);
   // attron(COLOR_PAIR(6));
 
-  this->maxWidth = 30;
-  this->maxHeight = 29;
+  init_pair(7, COLOR_GREEN, COLOR_BLACK);
+  // attron(COLOR_PAIR(6));
+
+  this->maxWidth = this->scenes.maxSizeCols;
+  this->maxHeight = this->scenes.maxSizeCols;
   this->ticksPassed = 0;
   this->quit = false;
 
@@ -85,10 +108,18 @@ void GameRunner::start() {
 
   int elapsedTime;
 
+  int currentMode = GAME_MODE;
+
   while (!this->quit) {
+    // reset background color
+
+    attron(COLOR_PAIR(1));
     ch = getch();
-    erase();         /// erase the screen (after getch())
-    if (ch != ERR) { /// user has a keypress
+    /// erase the screen (after getch())
+    erase();
+
+    /// user has a keypress
+    if (ch != ERR) {
       /// this is to delay until the next tick
       elapsedTime = getElapsedTime();
       if (elapsedTime < delay) {
@@ -96,35 +127,82 @@ void GameRunner::start() {
       }
     }
     this->ticksPassed += 1;
-    if (ch == 'z' || this->currentLevel == this->lastLevel) {
+    if (ch == 'z') {
       this->quit = true;
     } else {
-
-      Level *level = *(this->currentLevel);
-      if (level->isLevelComplete()) {
-        level->cleanup();
-        nsleep(100);
-        this->currentLevel++;
-        if (this->currentLevel == this->lastLevel) {
-          this->currentLevel = this->levels.begin();
-          (*(this->currentLevel))->init();
+      if (currentMode == GAME_MODE) {
+        Level *level = *(this->currentLevel);
+        if (level->isLevelComplete()) {
+          level->cleanup();
+          nsleep(100);
+          auto lose = level->lose;
+          this->currentLevel++;
+          if (lose || this->currentLevel == this->levels.end()) {
+            currentMode = END_MODE;
+            goToEndState(this, lose, this->score);
+          } else {
+            Level *nextLevel = *(this->currentLevel);
+            nextLevel->init();
+          }
         } else {
-          Level *nextLevel = *(this->currentLevel);
-          nextLevel->init();
+          level->update(ch);
+          level->draw();
         }
       } else {
-        level->update(ch);
-        level->draw();
+        Level *level = *(this->currentLevel);
+        if (level->isLevelComplete()) {
+          level->cleanup();
+          nsleep(100);
+          goToPlayState(this);
+          currentMode = GAME_MODE;
+        } else {
+          level->update(ch);
+          level->draw();
+        }
       }
     }
 
-    refresh();  // refresh the screen after adding everything
-    move(0, 0); /// move cursor to 0,0 (looks prettier if os doesn't allow
-                /// invisible cursors)
+    // refresh the screen after adding everything
+    /// move cursor to 0,0
+    /// looks prettier if os doesn't allow
+    /// invisible cursors
+    refresh();
+    move(0, 0);
   }
 
   endwin();
   cleanup(this);
+}
+
+void goToEndState(GameRunner *gr, bool lost, int score) {
+  if (lost) {
+    goToLoseState(gr, score);
+  } else {
+    goToWinState(gr, score);
+  }
+}
+
+void goToLoseState(GameRunner *gr, int score) {
+  gr->currentLevel = gr->endgame.begin();
+  gr->currentLevel++;
+  Level *level = (*gr->currentLevel);
+  level->init();
+  level->score = score;
+}
+
+void goToWinState(GameRunner *gr, int score) {
+  gr->currentLevel = gr->endgame.begin();
+  Level *level = (*gr->currentLevel);
+  level->init();
+  level->score = score;
+}
+
+void goToPlayState(GameRunner *gr) {
+  gr->currentLevel = gr->levels.begin();
+  Level *level = (*gr->currentLevel);
+  level->init();
+
+  // TODO(koalanis): add save high score here
 }
 
 void GameRunner::kill() { this->quit = true; }

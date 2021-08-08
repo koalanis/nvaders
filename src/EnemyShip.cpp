@@ -1,5 +1,5 @@
-#include "EnemyShip.h"
-#include "EnemyMissle.h"
+#include "EnemyShip.hpp"
+#include "EnemyMissle.hpp"
 #include <stdlib.h> /* srand, rand */
 
 int EnemyShip::velocity = 1;
@@ -16,9 +16,8 @@ void EnemyShip::update(int cmd) {
 
 bool EnemyShip::fire() {
   if (this->getASCII() == 'W') {
-    return rand() % 1000 <= 150;
-
+    return rand() % 10000 <= 150;
   } else {
-    return rand() % 1000 <= 75;
+    return rand() % 10000 <= 75;
   }
 }

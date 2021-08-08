@@ -1,19 +1,16 @@
 #ifndef _MENULEVEL_H_
 #define _MENULEVEL_H_
 
-#include<string>
-#include "Level.h"
+#include "Level.hpp"
+#include <string>
 
-struct MenuLevel : public Level
-{
+struct MenuLevel : public Level {
   std::string mask;
 
   bool start;
   bool quit;
 
-
-  
-  MenuLevel(GameRunner*);
+  MenuLevel(GameRunner *);
   virtual ~MenuLevel();
 
   virtual bool isLevelComplete();
@@ -21,8 +18,6 @@ struct MenuLevel : public Level
   virtual void draw();
   virtual void init();
   virtual void cleanup();
-
 };
 
 #endif
-
