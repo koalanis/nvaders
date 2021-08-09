@@ -253,7 +253,7 @@ void createPlayer(GameLevel *gr) {
 
 void createEnemy(GameLevel *gr) {
 
-  auto amountPerRow = 1;
+  auto amountPerRow = 11;
   auto enemySpawnY = 2;
 
   for (size_t row = 0; row < gr->rowsOfEnemies; row++) {
