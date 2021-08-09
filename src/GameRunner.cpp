@@ -145,9 +145,9 @@ void GameRunner::start() {
     } else {
       Level *level = this->levels[this->currentLevelIndex];
       if (level->isLevelComplete()) {
-        level->cleanup();
         nsleep(100);
         auto lose = level->lose;
+        level->cleanup();
         if (lose) {
           goToLoseState(this, this->score);
         } else {
@@ -190,7 +190,7 @@ void goToPlayState(GameRunner *gr) {
   gr->currentLevelIndex = 0;
   Level *level = (gr->levels[gr->currentLevelIndex]);
   level->init();
-
+  gr->score = 0;
   // TODO(koalanis): add save high score here
 }
 

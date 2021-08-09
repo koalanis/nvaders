@@ -202,21 +202,16 @@ void GameLevel::update(int ch) {
       this->done = true;
     }
 
-    if (!this->lose) {
-      if (this->player->isAlive == false) {
-        this->lose = true;
-        this->done = true;
-      }
+    if (this->player->isAlive == false) {
+      this->lose = true;
+      this->done = true;
     }
+    
 
    if (playerHeight == enemyHeight) {
       this->lose = true;
       this->done = true;
     } else {
-      // if (this->score == 1) {
-      //   this->win = true;
-      //   this->done = true;
-      // }
 
       if (this->player->isAlive && this->hoardObjects.empty()) {
         this->win = true;
@@ -234,6 +229,7 @@ void GameLevel::init() {
   this->start = true;
   this->lose = false;
   this->win = false;
+  this->done = false;
   createPlayer(this);
   createEnemy(this);
 }
@@ -242,6 +238,9 @@ void GameLevel::cleanup() {
   this->hoardObjects.clear();
   this->gameObjects.clear();
   this->bullets.clear();
+  this->lose = false;
+  this->win = false;
+  this->done = false;
 }
 
 // helpers
@@ -254,7 +253,7 @@ void createPlayer(GameLevel *gr) {
 
 void createEnemy(GameLevel *gr) {
 
-  auto amountPerRow = 11;
+  auto amountPerRow = 1;
   auto enemySpawnY = 2;
 
   for (size_t row = 0; row < gr->rowsOfEnemies; row++) {
