@@ -1,4 +1,5 @@
-
+### 8/8/2021
+- refactor std::lists into std::vectors
 
 ### 8/7/2021
 - added multiple levels

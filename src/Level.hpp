@@ -7,7 +7,7 @@ public:
   GameRunner *gameRunner;
 
   int score;
-  bool lose;
+  bool lose = false;
 
   Level(GameRunner *gameRunner);
   virtual ~Level();

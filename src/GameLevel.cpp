@@ -28,7 +28,7 @@ GameLevel::~GameLevel() { this->cleanup(); }
 void GameLevel::draw() {
   this->gameRunner->setColor(1);
   mvprintw(1, 0, this->gameRunner->scenes.border.c_str());
-  mvprintw(0, 0,"Points: %i.   'q' to quit.\n");
+  mvprintw(0, 0,"Points: %i.   'q' to quit.\n", this->gameRunner->score);
   if (!this->lose) {
     this->gameRunner->setColor(this->player->getColor());
     mvaddch(1 + this->player->getYPos(), this->player->getXPos(),
@@ -253,7 +253,7 @@ void createPlayer(GameLevel *gr) {
 
 void createEnemy(GameLevel *gr) {
 
-  auto amountPerRow = 10;
+  auto amountPerRow = 11;
   auto enemySpawnY = 2;
 
   for (size_t row = 0; row < gr->rowsOfEnemies; row++) {

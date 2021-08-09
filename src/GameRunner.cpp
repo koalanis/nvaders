@@ -12,15 +12,20 @@ void goToEndState(GameRunner *gr, bool lost, int score);
 void goToWinState(GameRunner *gr, int score);
 void goToLoseState(GameRunner *gr, int score);
 void goToPlayState(GameRunner *gr);
+void setupColors();
+void goToNextLevel(GameRunner* gr);
+
+
+bool inPlayMode(GameRunner* gr);
 
 void cleanup(GameRunner *gr) {
 
-  for (std::list<Level *>::iterator i = gr->levels.begin();
+  for (std::vector<Level *>::iterator i = gr->levels.begin();
        i != gr->levels.end(); ++i) {
     delete *i;
   }
 
-  for (std::list<Level *>::iterator i = gr->endgame.begin();
+  for (std::vector<Level *>::iterator i = gr->endgame.begin();
        i != gr->endgame.end(); ++i) {
     delete *i;
   }
@@ -33,8 +38,11 @@ void createLevels(GameRunner *gr) {
   gr->levels.push_back(new GameLevel(gr,3));
   gr->levels.push_back(new GameLevel(gr,4));
   gr->levels.push_back(new GameLevel(gr,5));
-  gr->endgame.push_back(new GameWonLevel(gr));
-  gr->endgame.push_back(new GameLostLevel(gr));
+  gr->levels.push_back(new GameWonLevel(gr));
+  gr->levels.push_back(new GameLostLevel(gr));
+
+  gr->gameWonLevelIndex = gr->levels.size()-2; 
+  gr->gameLostLevelIndex = gr->levels.size()-1;
 }
 
 GameRunner::GameRunner() {}
@@ -61,26 +69,7 @@ void GameRunner::start() {
 
   start_color(); /* Start color 			*/
 
-  init_pair(1, COLOR_WHITE, COLOR_BLACK);
-  attron(COLOR_PAIR(1));
-
-  init_pair(2, COLOR_CYAN, COLOR_BLACK);
-  // attron(COLOR_PAIR(2));
-
-  init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
-  // attron(COLOR_PAIR(3));
-
-  init_pair(4, COLOR_BLUE, COLOR_BLACK);
-  // attron(COLOR_PAIR(4));
-
-  init_pair(5, COLOR_YELLOW, COLOR_BLACK);
-  // attron(COLOR_PAIR(5));
-
-  init_pair(6, COLOR_RED, COLOR_BLACK);
-  // attron(COLOR_PAIR(6));
-
-  init_pair(7, COLOR_GREEN, COLOR_BLACK);
-  // attron(COLOR_PAIR(6));
+  setupColors();
 
   this->maxWidth = this->scenes.maxSizeCols;
   this->maxHeight = this->scenes.maxSizeCols;
@@ -129,38 +118,47 @@ void GameRunner::start() {
     this->ticksPassed += 1;
     if (ch == 'z') {
       this->quit = true;
-    } else {
-      if (currentMode == GAME_MODE) {
-        Level *level = *(this->currentLevel);
-        if (level->isLevelComplete()) {
-          level->cleanup();
-          nsleep(100);
-          auto lose = level->lose;
-          this->currentLevel++;
-          if (lose || this->currentLevel == this->levels.end()) {
-            currentMode = END_MODE;
-            goToEndState(this, lose, this->score);
-          } else {
-            Level *nextLevel = *(this->currentLevel);
-            nextLevel->init();
-          }
-        } else {
-          level->update(ch);
-          level->draw();
-        }
-      } else {
-        Level *level = *(this->currentLevel);
+      continue;
+    } 
+
+    if( this->currentLevelIndex == gameWonLevelIndex ||
+      this->currentLevelIndex == gameLostLevelIndex) {
+        Level *level = this->levels[this->currentLevelIndex];
         if (level->isLevelComplete()) {
           level->cleanup();
           nsleep(100);
           goToPlayState(this);
-          currentMode = GAME_MODE;
         } else {
           level->update(ch);
           level->draw();
         }
+    } else if (this->currentLevelIndex == this->menuLevelIndex) {
+        Level *level = this->levels[this->currentLevelIndex];
+        if (level->isLevelComplete()) {
+          level->cleanup();
+          nsleep(100);
+          goToNextLevel(this);
+        } else {
+          level->update(ch);
+          level->draw(); 
+        }
+    } else {
+      Level *level = this->levels[this->currentLevelIndex];
+      if (level->isLevelComplete()) {
+        level->cleanup();
+        nsleep(100);
+        auto lose = level->lose;
+        if (lose) {
+          goToLoseState(this, this->score);
+        } else {
+          goToNextLevel(this);
+        }
+      } else {
+        level->update(ch);
+        level->draw();
       }
     }
+    
 
     // refresh the screen after adding everything
     /// move cursor to 0,0
@@ -174,18 +172,9 @@ void GameRunner::start() {
   cleanup(this);
 }
 
-void goToEndState(GameRunner *gr, bool lost, int score) {
-  if (lost) {
-    goToLoseState(gr, score);
-  } else {
-    goToWinState(gr, score);
-  }
-}
-
 void goToLoseState(GameRunner *gr, int score) {
-  gr->currentLevel = gr->endgame.begin();
-  gr->currentLevel++;
-  Level *level = (*gr->currentLevel);
+  gr->currentLevelIndex = gr->gameLostLevelIndex;
+  Level *level = (gr->levels[gr->currentLevelIndex]);
   level->init();
   level->score = score;
 }
@@ -198,11 +187,44 @@ void goToWinState(GameRunner *gr, int score) {
 }
 
 void goToPlayState(GameRunner *gr) {
-  gr->currentLevel = gr->levels.begin();
-  Level *level = (*gr->currentLevel);
+  gr->currentLevelIndex = 0;
+  Level *level = (gr->levels[gr->currentLevelIndex]);
   level->init();
 
   // TODO(koalanis): add save high score here
 }
+
+
+void setupColors() {
+
+  init_pair(1, COLOR_WHITE, COLOR_BLACK);
+  attron(COLOR_PAIR(1));
+
+  init_pair(2, COLOR_CYAN, COLOR_BLACK);
+  // attron(COLOR_PAIR(2));
+
+  init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
+  // attron(COLOR_PAIR(3));
+
+  init_pair(4, COLOR_BLUE, COLOR_BLACK);
+  // attron(COLOR_PAIR(4));
+
+  init_pair(5, COLOR_YELLOW, COLOR_BLACK);
+  // attron(COLOR_PAIR(5));
+
+  init_pair(6, COLOR_RED, COLOR_BLACK);
+  // attron(COLOR_PAIR(6));
+
+  init_pair(7, COLOR_GREEN, COLOR_BLACK);
+  // attron(COLOR_PAIR(6));
+}
+
+
+void goToNextLevel(GameRunner* gr) {
+  gr->currentLevelIndex++;
+  Level *nextLevel = gr->levels[gr->currentLevelIndex];
+  nextLevel->init();
+}
+
 
 void GameRunner::kill() { this->quit = true; }
