@@ -3,6 +3,7 @@
 #include "../timehelper.h"
 #include "Scenes.hpp"
 #include <list>
+#include <vector>
 #include <ncurses.h> /* the ncurses library */
 #include <stdlib.h>  /* srand, rand */
 #include <string>
@@ -21,10 +22,15 @@ struct GameRunner {
   bool quit;
   int score;
 
-  std::list<Level *> levels;
-  std::list<Level *> endgame;
-  std::list<Level *>::iterator currentLevel;
-  std::list<Level *>::iterator lastLevel;
+  int currentLevelIndex = 0;
+  int menuLevelIndex = 0;
+  int gameWonLevelIndex = 0;
+  int gameLostLevelIndex = 0;
+
+  std::vector<Level*> levels;
+  std::vector<Level *> endgame;
+  std::vector<Level *>::iterator currentLevel;
+  std::vector<Level *>::iterator lastLevel;
 
   GameRunner();
   ~GameRunner();
