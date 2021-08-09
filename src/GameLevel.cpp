@@ -142,6 +142,7 @@ void GameLevel::update(int ch) {
          j != this->hoardObjects.end(); ++j) {
 
       // if playership bullet hits enemy ship
+
       if ((*i)->getASCII() == '|') {
         if ((*i)->getXPos() == (*j)->getXPos() &&
             (*i)->getYPos() == (*j)->getYPos()) {
@@ -159,6 +160,7 @@ void GameLevel::update(int ch) {
     }
 
     // if enemy bullet hits player ship
+
     if ((*i)->getASCII() != '|') {
       if ((*i)->getXPos() == this->player->getXPos() &&
           (*i)->getYPos() == this->player->getYPos()) {
@@ -207,7 +209,7 @@ void GameLevel::update(int ch) {
       }
     }
 
-    if (playerHeight == enemyHeight) {
+   if (playerHeight == enemyHeight) {
       this->lose = true;
       this->done = true;
     } else {
@@ -229,7 +231,6 @@ bool GameLevel::isLevelComplete() {
 }
 
 void GameLevel::init() {
-
   this->start = true;
   this->lose = false;
   this->win = false;
