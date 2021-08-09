@@ -1,13 +1,10 @@
 # nvaders
 
-a c++ ncurses game
+A c++ ncurses game
 
-uses make to build
+Tested on osx and linux [+ requires ncurses](https://www.cyberciti.biz/faq/linux-install-ncurses-library-headers-on-debian-ubuntu-centos-fedora/)
 
-tested on osx and linux [+ requires ncurses](https://www.cyberciti.biz/faq/linux-install-ncurses-library-headers-on-debian-ubuntu-centos-fedora/)
-
-
-to build and run
+To build and run:
 ```
 cd nvaders
 mkdir build && cd build
@@ -16,10 +13,10 @@ make
 ./nvaders
 ```
 
-rust clone coming soon...
-
--
-
 Screenshots taken in cool-retro-term
+
 ![menu](./nvaders-menu.png)
+
 ![gameplay](./nvaders-gameplay.png)
+
+rust clone coming soon...
