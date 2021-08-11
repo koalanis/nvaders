@@ -1,5 +1,6 @@
-![nvades](./logo.png)
-
+<div align="center">
+  <img src="./logo.png"/>
+</div>
 <h1 align="center">nvaders</h1>
 <div align="center"><em>Defend your terminal from the Alien Nvaders</em></div>
 
