@@ -22,6 +22,11 @@ Rust clone coming soon...
 
 ---
 
+<div align="center">
+  <img src="./nvaders-menu.png"/>
+</div>
+<div align="center">
+  <img src="./nvaders-gameplay.png"/>
+</div>
+
 Screenshots taken in [cool-retro-term](https://github.com/Swordfish90/cool-retro-term)
-![menu](./nvaders-menu.png#center)
-![gameplay](./nvaders-gameplay.png#center)
