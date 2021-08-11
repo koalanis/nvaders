@@ -10,11 +10,6 @@ struct Scenes {
   std::string menu;
   std::string lose;
   std::string win;
-  std::string level1;
-  std::string level2;
-  std::string level3;
-  std::string level4;
-  std::string level5;
   std::string border;
 
   Scenes() {
@@ -105,7 +100,7 @@ struct Scenes {
     lose += "#                           #\n";
     lose += "#                           #\n";
     lose += "#                           #\n";
-    lose += "#  program by Kaleb Alanis  #\n";
+    lose += "#                           #\n";
     lose += "#     Github:: koalanis     #\n";
     lose += "#                           #\n";
     lose += "#                           #\n";
@@ -135,7 +130,7 @@ struct Scenes {
     win += "#                           #\n";
     win += "#                           #\n";
     win += "#                           #\n";
-    win += "#  program by Kaleb Alanis  #\n";
+    win += "#                           #\n";
     win += "#     Github:: koalanis     #\n";
     win += "#                           #\n";
     win += "#                           #\n";
