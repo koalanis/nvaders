@@ -1,80 +1,14 @@
-<style>
-    img[src*='#center'] { 
-        display: block;
-        margin: auto;
-    }
-    .center {
-        margin: 0 auto;
-        text-align: center;
-    } 
+![nvades](./logo.png)
 
-    .font-large {
-       font-size: 1.2em;
-    } 
+<h1 align="center">nvaders</h1>
+<div align="center"><em>Defend your terminal from the Alien Nvaders</em></div>
 
-    .font-small {
-        font-size: 0.6em;
-    } 
-
-    .font-tiny {
-        font-size: 0.3em;
-    }
-
-    .font-blue {
-        color: lightblue;
-    }
-
-    .font-red {
-        color: red;
-    }
-
-
-    .font-green {
-        color: lightgreen;
-    }
-
-    .font-yellow {
-        color: yellow;
-    }
-
-</style>
-
-<div class="center">
-    <h1>
-        <div class="font-tiny">
-            <p>
-                <span class="font-yellow"> u </span>
-                <span class="font-green"> W </span>
-                <span class="font-yellow"> u </span>
-                <span class="font-green"> W </span>
-                <span class="font-yellow"> u </span>
-                <span class="font-green"> W </span>
-                <span class="font-yellow"> u </span>
-                <span class="font-green"> W </span>
-                <span class="font-yellow"> u </span>
-                <span class="font-green"> W </span>
-                <span class="font-yellow"> u </span>
-            </p> 
-            <p class="font-red"> | </p>
-            <p class="font-blue"> ^ </p>
-        </div>
-        <div class="font-large">
-            nvaders
-        </div>
-        <div class="font-small">
-            a c++ ncurses game
-        </div>
-    </h1>
-</div>
-
-
-
-
+ - A tiny Modern C++ ncurses game
  - Tested on osx and linux 
- - Requires[ ncurses](https://www.cyberciti.biz/faq/linux-install-ncurses-library-headers-on-debian-ubuntu-centos-fedora/)
+ - Requires [ncurses](https://www.cyberciti.biz/faq/linux-install-ncurses-library-headers-on-debian-ubuntu-centos-fedora/)
 
 
-To build and run
+To build and clone the repo and then run:
 ```
 cd nvaders
 mkdir build && cd build
@@ -87,9 +21,6 @@ Rust clone coming soon...
 
 ---
 
+Screenshots taken in [cool-retro-term](https://github.com/Swordfish90/cool-retro-term)
 ![menu](./nvaders-menu.png#center)
 ![gameplay](./nvaders-gameplay.png#center)
-
-<div class="center">
-Screenshots taken in cool-retro-term
-</div>
