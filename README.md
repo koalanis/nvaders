@@ -30,3 +30,8 @@ Rust clone coming soon...
 </div>
 
 Screenshots taken in [cool-retro-term](https://github.com/Swordfish90/cool-retro-term)
+
+---
+## TODO
+ - Finish ModernC++ migration
+ - Add final boss level
